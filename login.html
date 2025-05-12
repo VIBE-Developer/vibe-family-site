@@ -30,7 +30,7 @@
     .card p {
       margin-top: 5px;
       font-size: 1rem;
-      opacity: 0.7;
+      opacity: 0.8;
     }
     .btn {
       margin-top: 20px;
@@ -40,6 +40,16 @@
       border-radius: 6px;
       text-decoration: none;
       color: white;
+    }
+    .tag {
+      background: #4b4b6d;
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      margin-top: 5px;
+      color: #fff;
+      opacity: 0.7;
     }
   </style>
 </head>
@@ -55,23 +65,23 @@
 
   <script>
     async function loadUser() {
-      const res = await fetch("/auth/discord/callback" + location.search);
+      const extra = location.search.includes("?") ? "&json=1" : "?json=1";
+      const res = await fetch("/auth/discord/callback" + location.search + extra);
       if (!res.ok) {
         document.getElementById("user-card").innerHTML = "<p>❌ Ошибка входа</p>";
         return;
       }
-      const text = await res.text();
-      try {
-        const data = JSON.parse(text);
-        document.getElementById("user-card").innerHTML = `
-          <img src="https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png?size=128" alt="avatar" />
-          <h2>${data.username}#${data.discriminator}</h2>
-          <p>ID: ${data.id}</p>
-          <a class="btn" href="/">← Назад на сайт</a>
-        `;
-      } catch {
-        document.getElementById("user-card").innerHTML = "<p>" + text + "</p><a class='btn' href='/'>← Назад</a>";
-      }
+      const data = await res.json();
+      const name = data.global_name || data.username;
+      const tag = data.clan?.tag || '';
+      const badge = tag ? `<div class="tag">${tag}</div>` : '';
+      document.getElementById("user-card").innerHTML = `
+        <img src="https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png?size=128" alt="avatar" />
+        <h2>${name}</h2>
+        ${badge}
+        <p>ID: ${data.id}</p>
+        <a class="btn" href="/">← Назад на сайт</a>
+      `;
     }
     loadUser();
   </script>
