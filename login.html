@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vibe Family — Добро пожаловать</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      margin-top: 100px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      animation: fadeInUp 1s ease;
+    }
+    .card img {
+      border-radius: 50%;
+      width: 96px;
+      height: 96px;
+      margin-bottom: 10px;
+    }
+    .card h2 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+    .card p {
+      margin-top: 5px;
+      font-size: 1rem;
+      opacity: 0.7;
+    }
+    .btn {
+      margin-top: 20px;
+      display: inline-block;
+      padding: 10px 20px;
+      background: #7289da;
+      border-radius: 6px;
+      text-decoration: none;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <div class="overlay"></div>
+    <div class="content">
+      <div class="card" id="user-card">
+        <p>⏳ Загрузка...</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function loadUser() {
+      const res = await fetch("/auth/discord/callback" + location.search);
+      if (!res.ok) {
+        document.getElementById("user-card").innerHTML = "<p>❌ Ошибка входа</p>";
+        return;
+      }
+      const text = await res.text();
+      try {
+        const data = JSON.parse(text);
+        document.getElementById("user-card").innerHTML = `
+          <img src="https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png?size=128" alt="avatar" />
+          <h2>${data.username}#${data.discriminator}</h2>
+          <p>ID: ${data.id}</p>
+          <a class="btn" href="/">← Назад на сайт</a>
+        `;
+      } catch {
+        document.getElementById("user-card").innerHTML = "<p>" + text + "</p><a class='btn' href='/'>← Назад</a>";
+      }
+    }
+    loadUser();
+  </script>
+</body>
+</html>
