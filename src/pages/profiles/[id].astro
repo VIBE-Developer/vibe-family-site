@@ -1,0 +1,18 @@
+
+---
+const id = Astro.params.id;
+const res = await fetch(`https://api.vibe-family.org/user/${id}`);
+const user = await res.json();
+---
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Профиль — {user.username}</title>
+  </head>
+  <body style="font-family: sans-serif; text-align: center;">
+    <h1>👤 Профиль пользователя</h1>
+    <p><strong>ID:</strong> {user.id}</p>
+    <p><strong>Имя:</strong> {user.global_name || user.username}</p>
+    <img src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`} width="128" height="128" />
+  </body>
+</html>
