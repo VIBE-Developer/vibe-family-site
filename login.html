@@ -51,6 +51,16 @@
       color: #fff;
       opacity: 0.7;
     }
+    .debug {
+      margin-top: 20px;
+      font-size: 0.8rem;
+      color: #aaa;
+      text-align: left;
+      white-space: pre-wrap;
+      background: #111;
+      padding: 10px;
+      border-radius: 8px;
+    }
   </style>
 </head>
 <body>
@@ -60,29 +70,46 @@
       <div class="card" id="user-card">
         <p>⏳ Загрузка...</p>
       </div>
+      <div class="debug" id="debug-log" style="display: none;"></div>
     </div>
   </div>
 
   <script>
     async function loadUser() {
+      const debugBox = document.getElementById("debug-log");
       const extra = location.search.includes("?") ? "&json=1" : "?json=1";
-      const res = await fetch("/auth/discord/callback" + location.search + extra);
-      if (!res.ok) {
-        document.getElementById("user-card").innerHTML = "<p>❌ Ошибка входа</p>";
-        return;
+      const fullURL = "/auth/discord/callback" + location.search + extra;
+
+      try {
+        const res = await fetch(fullURL);
+        const text = await res.text();
+
+        debugBox.style.display = "block";
+        debugBox.textContent = "Запрос: " + fullURL + "\n\nОтвет:\n" + text;
+
+        if (!res.ok) {
+          document.getElementById("user-card").innerHTML = "<p>❌ Ошибка входа</p>";
+          return;
+        }
+
+        const data = JSON.parse(text);
+        const name = data.global_name || data.username;
+        const tag = data.clan?.tag || '';
+        const badge = tag ? `<div class="tag">${tag}</div>` : '';
+        document.getElementById("user-card").innerHTML = `
+          <img src="https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png?size=128" alt="avatar" />
+          <h2>${name}</h2>
+          ${badge}
+          <p>ID: ${data.id}</p>
+          <a class="btn" href="/">← Назад на сайт</a>
+        `;
+      } catch (err) {
+        debugBox.style.display = "block";
+        debugBox.textContent = "Ошибка обработки JSON:\n" + err.message;
+        document.getElementById("user-card").innerHTML = "<p>❌ Ошибка разбора ответа</p>";
       }
-      const data = await res.json();
-      const name = data.global_name || data.username;
-      const tag = data.clan?.tag || '';
-      const badge = tag ? `<div class="tag">${tag}</div>` : '';
-      document.getElementById("user-card").innerHTML = `
-        <img src="https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png?size=128" alt="avatar" />
-        <h2>${name}</h2>
-        ${badge}
-        <p>ID: ${data.id}</p>
-        <a class="btn" href="/">← Назад на сайт</a>
-      `;
     }
+
     loadUser();
   </script>
 </body>
