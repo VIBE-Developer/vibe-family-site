@@ -1,18 +1,74 @@
-
 ---
 const id = Astro.params.id;
-const res = await fetch(`https://api.vibe-family.org/user/${id}`);
-const user = await res.json();
 ---
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <title>Профиль — {user.username}</title>
+    <title>Профиль {id} — Vibe Family</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        background: #10101a;
+        color: white;
+        padding: 2rem;
+      }
+      .profile {
+        background: #1e1e2f;
+        padding: 2rem;
+        border-radius: 10px;
+        max-width: 600px;
+        margin: auto;
+      }
+      .avatar {
+        width: 128px;
+        height: 128px;
+        border-radius: 50%;
+        margin-bottom: 1rem;
+      }
+      .json {
+        font-family: monospace;
+        background: #282a36;
+        padding: 1rem;
+        border-radius: 5px;
+        white-space: pre-wrap;
+        margin-top: 2rem;
+      }
+    </style>
   </head>
-  <body style="font-family: sans-serif; text-align: center;">
-    <h1>👤 Профиль пользователя</h1>
-    <p><strong>ID:</strong> {user.id}</p>
-    <p><strong>Имя:</strong> {user.global_name || user.username}</p>
-    <img src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`} width="128" height="128" />
+  <body>
+    <div class="profile">
+      <h1>Профиль пользователя</h1>
+      <div id="loading">🔄 Загрузка данных...</div>
+      <div id="profile" style="display:none">
+        <img id="avatar" class="avatar" src="" alt="avatar" />
+        <h2 id="name"></h2>
+        <div class="json" id="json"></div>
+      </div>
+    </div>
+
+    <script type="module">
+      const id = "{id}";
+      const $loading = document.getElementById("loading");
+      const $profile = document.getElementById("profile");
+      const $avatar = document.getElementById("avatar");
+      const $name = document.getElementById("name");
+      const $json = document.getElementById("json");
+
+      fetch("http://212.220.99.254:8080/user/" + id)
+        .then(res => {
+          if (!res.ok) throw new Error("Not found");
+          return res.json();
+        })
+        .then(data => {
+          $loading.style.display = "none";
+          $profile.style.display = "block";
+          $avatar.src = `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png`;
+          $name.textContent = data.global_name || data.username || "Без имени";
+          $json.textContent = JSON.stringify(data, null, 2);
+        })
+        .catch(err => {
+          $loading.textContent = "❌ Пользователь не найден.";
+        });
+    </script>
   </body>
 </html>
