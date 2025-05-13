@@ -1,14 +1,57 @@
-
 ---
 ---
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
     <title>Vibe Family</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: radial-gradient(circle at center, #2c2f48, #1a1c2c);
+        font-family: 'Segoe UI', sans-serif;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        overflow: hidden;
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        animation: fadeIn 1s ease forwards;
+      }
+
+      .btn {
+        background: #3b3f63;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        border-radius: 8px;
+        margin: 10px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        animation: fadeIn 1.5s ease forwards;
+      }
+
+      .btn:hover {
+        background: #5a5f89;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+    </style>
   </head>
-  <body style="text-align: center; font-family: sans-serif;">
-    <h1>🌐 Добро пожаловать в Vibe Family</h1>
-    <p><a href="/login">Войти через Discord</a></p>
-    <p><a href="/profiles/303495066108952576">Пример профиля</a></p>
+  <body>
+    <h1>🌌 Добро пожаловать в Vibe Family</h1>
+    <a href="/login"><button class="btn">🔐 Войти через Discord</button></a>
+    <a href="/profiles/303495066108952576"><button class="btn">👤 Профиль (пример)</button></a>
   </body>
 </html>
